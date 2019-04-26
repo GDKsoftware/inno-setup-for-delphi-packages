@@ -47,7 +47,7 @@ type
 var
   InstalledDelphiVersions: array of TDelphiVersion;  ChooseDelphiInstallationPage: TInputOptionWizardPage;
 
-// Returns the correct Delphi reg key
+// Get the Delphi path from the registry
 function GetDelphiRegKey(const DelphiVersion: TDelphiVersion): string;
 var
   DelphiRegKey: string;
@@ -75,7 +75,6 @@ begin
   Result := DelphiRegKey;
 end;
 
-// Get the Delphi path from the registry
 function GetDelphiPath(const DelphiVersion: TDelphiVersion): string;
 var
   RootDir, DelphiRegKey: string;
@@ -191,6 +190,53 @@ begin
   Result := Params;
 end;
 
+// Register packages in Delphi
+procedure RegisterPackage(const DelphiToInstall: TDelphiVersion);
+var
+  DelphiVersionText, DelphiPath, Platform, SearchPath, LibraryPath, PathLine: string;
+begin
+  DelphiVersionText := GetFriendlyName(DelphiToInstall);
+  DelphiPath := GetDelphiPath(DelphiToInstall);
+  Platform := 'Win32'; // For the moment only win32 installation
+
+  RegWriteStringValue(HKEY_CURRENT_USER, GetDelphiRegKey(DelphiToInstall) + '\Known Packages',
+    ExpandConstant('{app}') + '\Bpl\' + DelphiVersionText + '\Win32\' + ExpandConstant('{#Package}'), 
+    ExpandConstant('{#PackageName}'));
+
+  LibraryPath := GetDelphiRegKey(DelphiToInstall) + '\Library\' + Platform;
+
+  if RegQueryStringValue(HKEY_CURRENT_USER, LibraryPath, 'Search Path', PathLine) then
+  begin
+    SearchPath := ExpandConstant('{app}')+'\Sourcecode\Package\' + DelphiVersionText + '\' + Platform + '\Release';
+    if Pos(SearchPath, PathLine) = 0 then
+    begin
+      PathLine := PathLine + ';' + SearchPath; 
+      RegWriteStringValue(HKEY_CURRENT_USER, LibraryPath, 'Search Path', PathLine);
+    end;
+  end;
+
+  if RegQueryStringValue(HKEY_CURRENT_USER, LibraryPath, 'Browsing Path', PathLine) then
+  begin
+    SearchPath := ExpandConstant('{app}')+'\Sourcecode\Package\';
+    
+    if Pos(SearchPath, PathLine) = 0 then
+    begin
+      PathLine := PathLine + ';' + SearchPath; 
+      RegWriteStringValue(HKEY_CURRENT_USER, LibraryPath, 'Browsing Path', PathLine); 
+    end;
+  end;
+
+  if RegQueryStringValue(HKEY_CURRENT_USER, LibraryPath, 'Debug DCU Path', PathLine) then
+  begin
+    SearchPath := ExpandConstant('{app}')+'\Sourcecode\Package\' + DelphiVersionText + '\' + Platform + '\Debug';
+    if Pos(SearchPath, PathLine) = 0 then
+    begin
+      PathLine := PathLine + ';' + SearchPath;
+      RegWriteStringValue(HKEY_CURRENT_USER, LibraryPath, 'Debug DCU Path', PathLine);
+    end;
+  end;
+end;  
+
 procedure InstallPackageFor(const DelphiToInstall: TDelphiVersion);
 var
   OldPackage, RunDir: string;
@@ -216,10 +262,7 @@ begin
     MsgBox('Error compiling for ' + DelphiVersionText, mbInformation, mb_OK)
   else
   begin
-    // Register package
-    RegWriteStringValue(HKEY_CURRENT_USER, GetDelphiRegKey(DelphiToInstall) + '\Known Packages',
-      ExpandConstant('{app}') + '\Bpl\' + DelphiVersionText + '\Win32\' + ExpandConstant('{#Package}'), 
-      ExpandConstant('{#PackageName}'));
+    RegisterPackage(DelphiToInstall);
   end;                 
 end;  
 
