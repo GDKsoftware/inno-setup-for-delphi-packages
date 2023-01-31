@@ -7,5 +7,5 @@ pipelines:
           enabled: false
         script:
           - git clone --bare git@bitbucket.org:GDK/inno-setup-for-delphi-packages.git
-          - cd RepoName.git
+          - cd inno-setup-for-delphi-packages.git
           - git push --mirror git@github.com:GDKsoftware/inno-setup-for-delphi-packages.git
