@@ -1,7 +1,7 @@
 #define MyAppName "MyAppName"
 #define MyAppVersion "1.0"
 #define MyAppPublisher "GDK Software"
-#define MyAppURL "http://www.gdksoftware.co.uk/"
+#define MyAppURL "http://www.gdksoftware.com/"
 
 #define Package "MyPackage.bpl"
 #define PackageProject "MyPackage.dproj"
@@ -45,7 +45,8 @@ type
     D102, D103);
 
 var
-  InstalledDelphiVersions: array of TDelphiVersion;  ChooseDelphiInstallationPage: TInputOptionWizardPage;
+  InstalledDelphiVersions: array of TDelphiVersion;
+  ChooseDelphiInstallationPage: TInputOptionWizardPage;
 
 // Get the Delphi path from the registry
 function GetDelphiRegKey(const DelphiVersion: TDelphiVersion): string;
@@ -88,7 +89,8 @@ begin
 end;
 
 // If the Delphi version is available, add it to the installed version list
-procedure CheckAndAddInstall(const DelphiVersion: TDelphiVersion);var 
+procedure CheckAndAddInstall(const DelphiVersion: TDelphiVersion);
+var 
   DelphiPath: string;
 begin
   DelphiPath := GetDelphiPath(DelphiVersion);
@@ -125,7 +127,8 @@ begin
   end;
 end; 
 
-function InitializeSetup(): Boolean;begin
+function InitializeSetup(): Boolean;
+begin
   // Check Delphi versions   
   CheckAndAddInstall(D7);
   CheckAndAddInstall(D2005);
@@ -166,7 +169,8 @@ begin
     ChooseDelphiInstallationPage.Values[i] := True;
   end;
 end;       
-function BuildCompileParams(const DelphiVersionText, DelphiPath: string): string;
+
+function BuildCompileParams(const DelphiVersionText, DelphiPath: string): string;
 var
   RunDir, Platform, BPLDir, DCUDir,
   Params: string;
@@ -182,7 +186,8 @@ begin
   // BPL directory
   BPLDir := ExpandConstant('{app}') + '\Bpl\' + DelphiVersionText + '\' + Platform; 
   Params := Params + '"' + BPLDir + '"';
-  DCUDir := RunDir + '\' + DelphiVersionText;
+
+  DCUDir := RunDir + '\' + DelphiVersionText;
   Params := Params + ' "' + DCUDir + '"';
   Params := Params + ' ""'; // include dir
   Params := Params + ' "' + RunDir + '\' + ExpandConstant('{#PackageName}') + '\' + ExpandConstant('{#PackageProject}') + '"';
