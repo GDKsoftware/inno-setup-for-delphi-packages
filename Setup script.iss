@@ -42,7 +42,7 @@ Name: "{app}\BPL"
 type
   TDelphiVersion = (D7, D2005, D2007, D2009, D2010, DXE,
     DXE2, DXE3, DXE4, DXE5, DXE6, DXE7, DXE8, D10, D101,
-    D102, D103);
+    D102, D103, D104, D11);
 
 var
   InstalledDelphiVersions: array of TDelphiVersion;
@@ -71,6 +71,8 @@ begin
     D101  : DelphiRegKey := 'Software\Embarcadero\BDS\18.0';
     D102  : DelphiRegKey := 'Software\Embarcadero\BDS\19.0';
     D103  : DelphiRegKey := 'Software\Embarcadero\BDS\20.0';
+    D104  : DelphiRegKey := 'Software\Embarcadero\BDS\21.0';
+    D11  : DelphiRegKey := 'Software\Embarcadero\BDS\22.0';
   end;
 
   Result := DelphiRegKey;
@@ -124,6 +126,8 @@ begin
     D101  : Result := 'Delphi 10.1 Berlin';
     D102  : Result := 'Delphi 10.2 Tokyo';
     D103  : Result := 'Delphi 10.3 Rio';
+    D104  : Result := 'Delphi 10.4 Sydney';
+    D11   : Result := 'Delphi 11 Alexandria';
   end;
 end; 
 
@@ -147,6 +151,8 @@ begin
   CheckAndAddInstall(D101);
   CheckAndAddInstall(D102);
   CheckAndAddInstall(D103);
+  CheckAndAddInstall(D104);
+  CheckAndAddInstall(D11);
 
   Result := True;
 end;                    
